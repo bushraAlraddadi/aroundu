@@ -108,6 +108,7 @@ const T = {
   missing:"Not heard — please choose", notUnderstood:"Sorry, I didn't catch that.",
   tryAgain:"Try again", useForm:"Fill the form", heard:"I heard:",
   nothingChanged:"OK, nothing was changed.",
+  errMic:"Microphone is blocked. Click the lock icon next to the address and allow the microphone.", errNet:"Voice needs an internet connection and works best in Google Chrome. You can type it instead.", errSilent:"I didn't hear anything. Check your microphone and try again.",
   soonTitle:"Coming soon", soonSub:"This part of AroundU is not in this prototype. Try “Swap a section”.", home:"Back to home",
   s2Title:"Swap a section", course:"Course", mine:"My section", want:"Section I want",
   s2Note:"Only students who want the opposite swap will see this.", find:"Find students",
@@ -155,6 +156,7 @@ const T = {
   missing:"لم يُسمع — يُرجى الاختيار", notUnderstood:"عذرًا، لم يُفهم الطلب.",
   tryAgain:"المحاولة مرة أخرى", useForm:"تعبئة النموذج", heard:"تم سماع:",
   nothingChanged:"حسنًا، لم يتغير شيء.",
+  errMic:"الميكروفون محظور. اضغط على أيقونة القفل بجانب العنوان واسمح بالميكروفون.", errNet:"الصوت يحتاج اتصالًا بالإنترنت ويعمل بشكل أفضل في Google Chrome. يمكن كتابة الطلب بدلًا من ذلك.", errSilent:"لم يُسمع أي صوت. تأكد من الميكروفون وحاول مرة أخرى.",
   soonTitle:"قريبًا", soonSub:"هذا الجزء من AroundU غير متاح في هذا النموذج. جرّب «تبديل شعبة».", home:"الرجوع إلى الرئيسية",
   s2Title:"تبديل شعبة", course:"المادة", mine:"شعبتي الحالية", want:"الشعبة المطلوبة",
   s2Note:"يظهر طلبك فقط للطلاب الذين يريدون التبديل المعاكس.", find:"البحث عن طلاب",
@@ -231,7 +233,7 @@ function parseCommand(raw){
   const words={"واحد":1,"one":1,"اثنين":2,"إثنين":2,"two":2,"ثلاثة":3,"ثلاث":3,"three":3};
   s = s.replace(/(?:شعبة|شعبه|section|سكشن)\s*(واحد|one|اثنين|إثنين|two|ثلاثة|ثلاث|three)/ig,(m,w)=>" L0"+words[w.toLowerCase()]+" ");
   s = s.replace(/(?:شعبة|شعبه|section|سكشن)\s*0?(\d)\b/ig," L0$1 ");
-  s = s.replace(/(?:إل|ال|أل|اِل|L|ل)\s*-?\s*0?([1-9])(?!\d)/g," L0$1 ");
+  s = s.replace(/(?:إل|ال|أل|اِل|\bel\b|L|l|ل)\s*-?\s*0?([1-9])(?!\d)/g," L0$1 ");
   const toks=[]; const re=/L0([1-9])/g; let m;
   while((m=re.exec(s))){ const before=s.slice(Math.max(0,m.index-14),m.index).toLowerCase();
     let role=null;
@@ -253,8 +255,8 @@ function startVoice(){
     recog = new SR(); recog.lang = S.lang==="ar" ? "ar-SA" : "en-US";
     recog.interimResults=false; recog.maxAlternatives=1;
     recog.onresult = e => handleHeard(e.results[0][0].transcript);
-    recog.onerror = e => { S.voice={state: e.error==="not-allowed"||e.error==="service-not-allowed"?"unsupported":"notunderstood",heard:"",result:null}; render(); };
-    recog.onend = () => { if(S.voice.state==="listening"){ S.voice.state="notunderstood"; render(); } };
+    recog.onerror = e => { const k=(e.error==="not-allowed"||e.error==="service-not-allowed"||e.error==="audio-capture")?"errMic":(e.error==="network"?"errNet":(e.error==="no-speech"?"errSilent":null)); S.voice={state:"notunderstood",heard:"",result:null,err:k}; render(); };
+    recog.onend = () => { if(S.voice.state==="listening"){ S.voice={state:"notunderstood",heard:"",result:null,err:"errSilent"}; render(); } };
     S.voice={state:"listening",heard:"",result:null}; render(); recog.start();
   }catch(err){ S.voice={state:"unsupported",heard:"",result:null}; render(); }
 }
@@ -327,7 +329,7 @@ function voicePanel(){
       </div></div>`;
   } else if(v.state==="notunderstood"){
     body=`<div class="dialog" role="alert">
-      <p class="alert">${I.warn}<span>${t("notUnderstood")}</span></p>
+      <p class="alert">${I.warn}<span>${v.err?t(v.err):t("notUnderstood")}</span></p>
       ${v.heard?`<p class="note">${t("heard")} <bdi dir="auto">${v.heard.replace(/([A-Za-z]+)\s+(\d+)/g,"$1\u00a0$2")}</bdi></p>`:""}
       <div class="btnrow">
         <button class="btn primary" type="button" onclick="startVoice()">${t("tryAgain")}</button>
