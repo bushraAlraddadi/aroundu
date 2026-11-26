@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AroundU · Swap a section</title>
+<style>
+  :root{
+    --bg:#FBF6EC; --card:#FFFFFF; --text:#1C2333; --muted:#4A5263;
+    --main:#1E3A8A; --main-dark:#162C6B; --gold:#E3B23C;
+    --free:#2E6B1E; --busy:#8A6410; --err:#A8321C; --line:#D9D2C3;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#E9E4D8;color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  [lang="ar"] body, [lang="ar"] .phone{font-family:"Noto Sans Arabic",Tahoma,"Segoe UI",Arial,sans-serif}
+  .phone{width:390px;max-width:100%;min-height:100vh;margin:0 auto;background:var(--bg);
+    padding:20px 22px 32px;display:flex;flex-direction:column;gap:16px;position:relative}
+  @media (min-width:430px){.phone{min-height:820px;margin:24px auto;border-radius:28px;border:1px solid var(--line)}}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px}
+  .brand{font-weight:800;color:var(--main);letter-spacing:.2px;font-size:17px}
+  .iconbtn{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;
+    background:none;border:0;border-radius:10px;cursor:pointer;color:var(--text)}
+  [dir="rtl"] .iconbtn.back svg{transform:scaleX(-1)}
+  .lang{min-height:44px;padding:0 16px;border-radius:22px;border:1.5px solid var(--main);
+    background:var(--card);color:var(--main);font-weight:700;font-size:15px;cursor:pointer;font-family:inherit}
+  h1{font-size:27px;line-height:1.3;margin:4px 0 0;outline:none}
+  h1::after{content:"";display:block;width:44px;height:4px;background:var(--gold);border-radius:2px;margin-top:10px}
+  .sub{margin:0;color:var(--muted);font-size:16px;line-height:1.5}
+  .btn{display:block;width:100%;min-height:52px;padding:14px 16px;border-radius:12px;font-size:17px;
+    font-weight:700;cursor:pointer;font-family:inherit;text-align:center;line-height:1.3}
+  .btn.primary{background:var(--main);color:#fff;border:2px solid var(--main)}
+  .btn.primary:hover{background:var(--main-dark)}
+  .btn.secondary{background:var(--card);color:var(--main);border:2px solid var(--main)}
+  .btn.link{background:none;border:0;color:var(--main);text-decoration:underline;min-height:44px}
+  button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible,[role=switch]:focus-visible{
+    outline:3px solid var(--gold);outline-offset:3px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;
+    display:flex;flex-direction:column;gap:10px}
+  .who{font-size:18px;font-weight:700;margin:0}
+  .status{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600}
+  .status.free{color:var(--free)} .status.busy{color:var(--busy)}
+  .dot{width:14px;height:14px;border-radius:50%;background:var(--free);flex:none}
+  .meta{font-size:14px;color:var(--muted)}
+  .tag{display:inline-block;font-size:13px;font-weight:700;color:var(--main);background:#E8EDF8;
+    border-radius:8px;padding:3px 8px;align-self:flex-start}
+  .note{font-size:15px;color:var(--muted);line-height:1.5;margin:0}
+  .summary{font-weight:700;font-size:15px}
+  label{font-weight:700;font-size:15px;display:block;margin-bottom:6px}
+  select,textarea,input[type=text]{width:100%;min-height:48px;border:1.5px solid #8C8574;border-radius:10px;
+    background:var(--card);color:var(--text);font-size:17px;padding:10px 12px;font-family:inherit}
+  textarea{min-height:120px;resize:vertical;line-height:1.5}
+  .field{display:flex;flex-direction:column}
+  .error-text{color:var(--err);font-weight:700;font-size:15px;display:flex;gap:6px;align-items:center}
+  .alert{display:flex;gap:10px;align-items:flex-start;color:var(--err);font-weight:700;font-size:16px}
+  .ok{color:var(--free)}
+  .row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+  .switch{display:flex;align-items:center;gap:10px;cursor:pointer;background:none;border:0;padding:6px 0;
+    font:inherit;color:var(--text);min-height:44px}
+  .switch .track{width:46px;height:28px;border-radius:14px;background:#8C8574;position:relative;flex:none;transition:background .15s}
+  .switch .knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .15s}
+  .switch[aria-checked="true"] .track{background:var(--main)}
+  .switch[aria-checked="true"] .knob{left:21px}
+  [dir="rtl"] .switch .knob{left:auto;right:3px}
+  [dir="rtl"] .switch[aria-checked="true"] .knob{right:21px}
+  .voice{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .mic{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;border-radius:28px;border:2px solid var(--main);
+    background:var(--main);color:#fff;font-size:17px;font-weight:700;padding:6px 18px 6px 8px;cursor:pointer;font-family:inherit}
+  [dir="rtl"] .mic{padding:6px 8px 6px 18px}
+  .mic .ring{width:42px;height:42px;border-radius:50%;background:#fff;color:var(--main);display:flex;align-items:center;justify-content:center;flex:none}
+  .mic.listening .ring{animation:pulse 1s infinite}
+  .mic[disabled]{background:#6B7280;border-color:#6B7280;cursor:not-allowed}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(227,178,60,.9)}100%{box-shadow:0 0 0 12px rgba(227,178,60,0)}}
+  .typeit{display:flex;gap:8px}
+  .typeit input{flex:1}
+  .typeit button{min-width:72px;min-height:48px;border-radius:10px;border:2px solid var(--main);background:var(--card);color:var(--main);font-weight:700;font-family:inherit;font-size:16px;cursor:pointer}
+  .dialog{border:2px solid var(--main);background:#F1F4FB;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .dialog .q{font-size:18px;font-weight:700;margin:0}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap}
+  .btnrow .btn{flex:1;min-width:90px}
+  .why{background:#F1F4FB;border-radius:10px;padding:10px 12px;font-size:15px;line-height:1.5;margin:0}
+  .spinner{width:18px;height:18px;border:3px solid #C9CFDD;border-top-color:var(--main);border-radius:50%;animation:spin 1s linear infinite;flex:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .check{font-size:30px}
+  .big{font-size:20px;font-weight:800}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .spacer{flex:1}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="phone" id="app" aria-live="off"></main>
+<div class="sr" aria-live="polite" id="live"></div>
+
+<script>
+/* ---------- text in both languages ---------- */
+const T = {
+ en:{
+  brand:"AroundU", langBtn:"عربي", langLabel:"عربي، عرض الصفحة بالعربي", back:"Back",
+  s1Title:"What do you need?", s1Sub:"Find the right person on campus.",
+  swap:"Swap a section", need:"Need something now", lost:"Lost & found",
+  voiceTitle:"Or just say it", micBtn:"Tap and say what you need", micListening:"Listening… speak now",
+  micExample:'Example: "I want to move from L02 to L01 in AI 418"',
+  voiceSwitch:"Voice", voiceOff:"Voice is off. Use the buttons or the form.",
+  noVoice:"Voice works in Chrome. You can type it here or use the form.",
+  typeLabel:"Or type it", typeBtn:"Go",
+  didYouMean:"Did you mean:", yes:"Yes", no:"No", edit:"Edit",
+  missing:"Not heard — please choose", notUnderstood:"Sorry, I didn't catch that.",
+  tryAgain:"Try again", useForm:"Fill the form", heard:"I heard:",
+  nothingChanged:"OK, nothing was changed.",
+  soonTitle:"Coming soon", soonSub:"This part of AroundU is not in this prototype. Try “Swap a section”.", home:"Back to home",
+  s2Title:"Swap a section", course:"Course", mine:"My section", want:"Section I want",
+  s2Note:"Only students who want the opposite swap will see this.", find:"Find students",
+  sameErr:"Your section and the section you want are the same. Choose a different one.",
+  remembered:"Filled from your last request.",
+  s3Title:n=>n===1?"1 student wants this swap":`${n} students want this swap`,
+  wants:(a,b)=>`wants ${a} → ${b}`, student:x=>`Student ${x}`,
+  free:"Free now", busy:t=>`Busy until ${t}`, fast:"Usually replies within an hour", slow:"Usually replies within a few hours",
+  ask:x=>`Ask Student ${x} to swap`, similar:"Similar match",
+  smart:"Smart order", why:"Why this order?",
+  whyOn:"Smart order puts first the student most likely to answer soon: free now, replies fast, same campus. Turn it off to see the newest requests first.",
+  whyOff:"Smart order is off. Newest requests are shown first.",
+  orderOn:"Students most likely to answer soon appear first.", orderOff:"Newest requests appear first.",
+  path:(c,a,b)=>`${c} · ${a} → ${b}`,
+  s4Title:x=>`Ask Student ${x} to swap`, msgLabel:"Message (tap to edit)",
+  msg:(c,a,b)=>`Hi! I'm in ${a} of ${c} and want ${b}. I saw you want the opposite. Would you like to swap?`,
+  send:"Send request", s4Note:"She gets this directly, not in a group. She sees your section, not your name, until she accepts.",
+  sentTitle:"Request sent", waiting:x=>`Waiting for Student ${x} to reply…`, pending:"Pending · sent just now",
+  cancel:"Cancel request", sentNote:"We will notify you when she replies. Only she sees this request.",
+  e1Tag:"Swap no longer available", e1Title:"This swap was just taken by another student.",
+  e1Sub:"Student B still wants the same swap.", other:"See other matches", saved:"Your course and sections are saved.",
+  s5Title:"Swap agreed", accepted:t=>`Noura accepted your request at ${t}.`,
+  you:(a,b)=>`You: ${a} → ${b}`, with:(a,b)=>`With: Noura · ${a} → ${b}`,
+  nextStep:"Next step: go with Noura to the Registration office to update both sections.", msgNoura:"Message Noura",
+  chatTitle:"Message Noura", chatLabel:"Your message", chatMsg:"Hi Noura! Thanks for agreeing. When can we go to Registration together?",
+  sendMsg:"Send message", msgSent:"Message sent to Noura.", done:"Done",
+  noneTitle:"No students want this swap yet", noneSub:"Nobody has asked for the opposite swap so far.",
+  noneNotify:"We will notify you as soon as someone asks for this swap.", change:"Change sections",
+  contactReg:"Contact Registration", regTitle:"Contact Registration",
+  regSub:"Registration can tell you if a seat is free in the section you want.", regLabel:"Your message to Registration",
+  regMsg:(c,a,b)=>`Hello, I am in ${a} of ${c} and would like to move to ${b}. Is there a free seat?`,
+  regSent:"Sent. Registration usually replies within two working days.",
+  canceled:"Request cancelled."
+ },
+ ar:{
+  brand:"AroundU", langBtn:"English", langLabel:"English, show this page in English", back:"رجوع",
+  s1Title:"كيف نساعدك؟", s1Sub:"الوصول إلى الشخص المناسب في الجامعة.",
+  swap:"تبديل شعبة", need:"طلب مساعدة الآن", lost:"المفقودات",
+  voiceTitle:"أو اطلب بصوتك", micBtn:"اضغط وتحدّث", micListening:"جارٍ الاستماع… تحدّث الآن",
+  micExample:"مثال: أريد الانتقال من <bdi dir=\"ltr\">L02</bdi> إلى <bdi dir=\"ltr\">L01</bdi> في <bdi dir=\"ltr\">AI&nbsp;418</bdi>",
+  voiceSwitch:"الصوت", voiceOff:"الصوت متوقف. استخدم الأزرار أو النموذج.",
+  noVoice:"الصوت متاح في متصفح Chrome. يمكن الكتابة هنا أو استخدام النموذج.",
+  typeLabel:"أو اكتب طلبك", typeBtn:"تم",
+  didYouMean:"هل المقصود:", yes:"نعم", no:"لا", edit:"تعديل",
+  missing:"لم يُسمع — يُرجى الاختيار", notUnderstood:"عذرًا، لم يُفهم الطلب.",
+  tryAgain:"المحاولة مرة أخرى", useForm:"تعبئة النموذج", heard:"تم سماع:",
+  nothingChanged:"حسنًا، لم يتغير شيء.",
+  soonTitle:"قريبًا", soonSub:"هذا الجزء من AroundU غير متاح في هذا النموذج. جرّب «تبديل شعبة».", home:"الرجوع إلى الرئيسية",
+  s2Title:"تبديل شعبة", course:"المادة", mine:"شعبتي الحالية", want:"الشعبة المطلوبة",
+  s2Note:"يظهر طلبك فقط للطلاب الذين يريدون التبديل المعاكس.", find:"البحث عن طلاب",
+  sameErr:"الشعبة الحالية والشعبة المطلوبة متطابقتان. يُرجى اختيار شعبة أخرى.",
+  remembered:"تمت التعبئة من طلبك الأخير.",
+  s3Title:n=>n===1?"طالب واحد يريد هذا التبديل":"طالبان يريدان هذا التبديل",
+  wants:(a,b)=>`يريد من ${a} إلى ${b}`, student:x=>`الطالب ${x==="A"?"أ":"ب"}`,
+  free:"متاح الآن", busy:t=>`مشغول حتى ${t}`, fast:"يرد عادةً خلال ساعة", slow:"يرد عادةً خلال ساعات",
+  ask:x=>`طلب التبديل`, similar:"مطابقة مشابهة",
+  smart:"الترتيب الذكي", why:"لماذا هذا الترتيب؟",
+  whyOn:"يعرض الترتيب الذكي أولًا الطالب الأقرب للرد بسرعة: متاح الآن، ويرد بسرعة، ومن الحرم نفسه. عند إيقافه تظهر الطلبات الأحدث أولًا.",
+  whyOff:"الترتيب الذكي متوقف. تظهر الطلبات الأحدث أولًا.",
+  orderOn:"يظهر أولًا الطلاب الأقرب للرد بسرعة.", orderOff:"تظهر الطلبات الأحدث أولًا.",
+  path:(c,a,b)=>`${c} · من ${a} إلى ${b}`,
+  s4Title:x=>`طلب التبديل من ${x==="A"?"الطالب أ":"الطالب ب"}`, msgLabel:"الرسالة (قابلة للتعديل)",
+  msg:(c,a,b)=>`مرحبًا، أنا في شعبة ${a} من ${c} وأرغب في الانتقال إلى ${b}. لاحظت أنك تريد العكس، هل نتبادل؟`,
+  send:"إرسال الطلب", s4Note:"يصل الطلب مباشرة، وليس في مجموعة. تظهر شعبتك فقط، دون اسمك، حتى تتم الموافقة.",
+  sentTitle:"تم إرسال الطلب", waiting:x=>`بانتظار رد ${x==="A"?"الطالب أ":"الطالب ب"}…`, pending:"قيد الانتظار · أُرسل الآن",
+  cancel:"إلغاء الطلب", sentNote:"سيصلك إشعار عند الرد. لا يرى الطلب غير الطالب المعني.",
+  e1Tag:"التبديل لم يعد متاحًا", e1Title:"تم أخذ هذا التبديل من طالب آخر قبل قليل.",
+  e1Sub:"الطالب ب ما زال يريد التبديل نفسه.", other:"عرض المطابقات الأخرى", saved:"تم حفظ المادة والشعب.",
+  s5Title:"تم الاتفاق على التبديل", accepted:t=>`وافقت نورة على طلبك الساعة ${t}.`,
+  you:(a,b)=>`أنت: من ${a} إلى ${b}`, with:(a,b)=>`مع: نورة · من ${a} إلى ${b}`,
+  nextStep:"الخطوة التالية: مراجعة مكتب التسجيل مع نورة لتحديث الشعبتين.", msgNoura:"مراسلة نورة",
+  chatTitle:"مراسلة نورة", chatLabel:"رسالتك", chatMsg:"مرحبًا نورة، شكرًا على الموافقة. متى يمكننا مراجعة التسجيل معًا؟",
+  sendMsg:"إرسال الرسالة", msgSent:"تم إرسال رسالتك إلى نورة.", done:"تم",
+  noneTitle:"لا يوجد طلاب يريدون هذا التبديل حاليًا", noneSub:"لم يطلب أحد التبديل المعاكس حتى الآن.",
+  noneNotify:"سيصلك إشعار فور طلب أحد هذا التبديل.", change:"تغيير الشعب",
+  contactReg:"التواصل مع التسجيل", regTitle:"التواصل مع التسجيل",
+  regSub:"يمكن لمكتب التسجيل إبلاغك بوجود مقعد شاغر في الشعبة المطلوبة.", regLabel:"رسالتك إلى التسجيل",
+  regMsg:(c,a,b)=>`السلام عليكم، أنا في شعبة ${a} من ${c} وأرغب في الانتقال إلى شعبة ${b}. هل يوجد مقعد شاغر؟`,
+  regSent:"تم الإرسال. يرد مكتب التسجيل عادةً خلال يومي عمل.",
+  canceled:"تم إلغاء الطلب."
+ }
+};
+
+/* ---------- state ---------- */
+const S = {
+  lang: load("lang","en"), screen:"S1", stack:[],
+  form: load("form",{course:"AI 418", mine:"L02", want:"L01"}), remembered: !!localGet("form"),
+  smart:true, why:false, voiceOn:true,
+  voice:{state:"idle", heard:"", result:null},
+  sameErr:false, msg:"", timer:null, flash:""
+};
+function localGet(k){try{return localStorage.getItem("aroundu_"+k)}catch(e){return null}}
+function load(k,d){try{const v=localStorage.getItem("aroundu_"+k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem("aroundu_"+k,JSON.stringify(v))}catch(e){}}
+
+const t = k => T[S.lang][k];
+const AR_DIGITS = "٠١٢٣٤٥٦٧٨٩";
+const num = s => S.lang==="ar" ? String(s).replace(/\d/g,d=>AR_DIGITS[d]) : String(s);
+const code = s => `<bdi dir="ltr">${s}</bdi>`;   /* course codes stay left to right */
+
+/* ---------- AI layer 2: adaptive order ---------- */
+const MATCHES = [
+  {id:"A", free:true,  busyUntil:null,    fastReply:true,  sameCampus:true,  postedMinAgo:25},
+  {id:"B", free:false, busyUntil:"12:00", fastReply:false, sameCampus:true,  postedMinAgo:10}
+];
+function hasMatches(){ return S.form.course==="AI 418"; }
+function score(m){ return (m.free?3:0) + (m.fastReply?2:0) + (m.sameCampus?1:0); }
+function ordered(list){
+  const l=[...list];
+  if(S.smart) l.sort((a,b)=>score(b)-score(a) || a.postedMinAgo-b.postedMinAgo);
+  else l.sort((a,b)=>a.postedMinAgo-b.postedMinAgo);
+  return l.map(m=>({...m, similar: S.smart && l.some(o=>o!==m && score(o)===score(m))}));
+}
+
+/* ---------- AI layer 1: voice / typed command ---------- */
+function parseCommand(raw){
+  let s = raw.replace(/[٠-٩]/g,d=>AR_DIGITS.indexOf(d)).replace(/\s+/g," ").trim();
+  let course=null;
+  if(/(a\s*\.?\s*i|اي\s*اي|إي\s*آي|ايه\s*آي|إيه\s*آي|اي\s*آي)?\s*-?\s*418|أربعمية\s*وثمنطعش|اربعمية\s*وثمنطعش/i.test(s)){course="AI 418";}
+  s = s.replace(/(a\s*\.?\s*i|اي\s*اي|إي\s*آي|ايه\s*آي|إيه\s*آي|اي\s*آي)?\s*-?\s*418/ig," COURSE ");
+  const words={"واحد":1,"one":1,"اثنين":2,"إثنين":2,"two":2,"ثلاثة":3,"ثلاث":3,"three":3};
+  s = s.replace(/(?:شعبة|شعبه|section|سكشن)\s*(واحد|one|اثنين|إثنين|two|ثلاثة|ثلاث|three)/ig,(m,w)=>" L0"+words[w.toLowerCase()]+" ");
+  s = s.replace(/(?:شعبة|شعبه|section|سكشن)\s*0?(\d)\b/ig," L0$1 ");
+  s = s.replace(/(?:إل|ال|أل|اِل|L|ل)\s*-?\s*0?([1-9])(?!\d)/g," L0$1 ");
+  const toks=[]; const re=/L0([1-9])/g; let m;
+  while((m=re.exec(s))){ const before=s.slice(Math.max(0,m.index-14),m.index).toLowerCase();
+    let role=null;
+    if(/(إلى|الى|لـ|to|into|for|أبي|ابي|ابغى|أبغى|want)\s*$/.test(before)) role="want";
+    if(/(من|from|in|أنا في|انا في|شعبتي)\s*$/.test(before)) role="mine";
+    toks.push({sec:"L0"+m[1], role}); }
+  let mine=null, want=null;
+  toks.forEach(k=>{ if(k.role==="mine"&&!mine) mine=k.sec; else if(k.role==="want"&&!want) want=k.sec; });
+  toks.forEach(k=>{ if(!k.role){ if(!mine) mine=k.sec; else if(!want && k.sec!==mine) want=k.sec; } });
+  if(!mine && !want && !course) return null;
+  return {course, mine, want};
+}
+
+let recog=null;
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+function startVoice(){
+  if(!SR){ S.voice={state:"unsupported",heard:"",result:null}; render(); return; }
+  try{
+    recog = new SR(); recog.lang = S.lang==="ar" ? "ar-SA" : "en-US";
+    recog.interimResults=false; recog.maxAlternatives=1;
+    recog.onresult = e => handleHeard(e.results[0][0].transcript);
+    recog.onerror = e => { S.voice={state: e.error==="not-allowed"||e.error==="service-not-allowed"?"unsupported":"notunderstood",heard:"",result:null}; render(); };
+    recog.onend = () => { if(S.voice.state==="listening"){ S.voice.state="notunderstood"; render(); } };
+    S.voice={state:"listening",heard:"",result:null}; render(); recog.start();
+  }catch(err){ S.voice={state:"unsupported",heard:"",result:null}; render(); }
+}
+function handleHeard(text){
+  const r = parseCommand(text);
+  S.voice = r ? {state:"confirm",heard:text,result:r} : {state:"notunderstood",heard:text,result:null};
+  render(); announce(r ? t("didYouMean") : t("notUnderstood"));
+}
+function voiceYes(){
+  const r=S.voice.result;
+  S.form={course:r.course||S.form.course, mine:r.mine||S.form.mine, want:r.want||S.form.want};
+  S.voice={state:"idle",heard:"",result:null};
+  if(r.course && r.mine && r.want && r.mine!==r.want){ save("form",S.form); go(hasMatches()?"S3":"S3-0"); }
+  else go("S2");
+}
+function voiceEdit(){
+  const r=S.voice.result||{};
+  S.form={course:r.course||S.form.course, mine:r.mine||S.form.mine, want:r.want||S.form.want};
+  S.voice={state:"idle",heard:"",result:null}; go("S2");
+}
+function voiceNo(){ S.voice={state:"idle",heard:"",result:null}; S.flash=t("nothingChanged"); render(); }
+
+/* ---------- navigation ---------- */
+function go(screen, push=true){
+  clearTimeout(S.timer);
+  if(push && S.screen!==screen) S.stack.push(S.screen);
+  S.screen=screen; S.why=false; S.sameErr=false; S.flash="";
+  if(screen==="S4A"||screen==="S4B") S.msg="";
+  render(true);
+  if(screen==="S4A-W") S.timer=setTimeout(()=>go("E1"),3000);
+  if(screen==="S4B-W") S.timer=setTimeout(()=>go("S5"),3000);
+}
+function back(){ clearTimeout(S.timer); const p=S.stack.pop(); if(p){ S.screen=p; S.voice.state="idle"; render(true);} }
+function home(){ S.stack=[]; go("S1",false); }
+function toggleLang(){ S.msg="";S.chat="";S.reg=""; S.lang = S.lang==="en"?"ar":"en"; save("lang",S.lang); if(recog){try{recog.abort()}catch(e){}} if(S.voice.state==="listening") S.voice.state="idle"; render(true); }
+function announce(msg){ const l=document.getElementById("live"); l.textContent=""; setTimeout(()=>l.textContent=msg,50); }
+
+/* ---------- icons ---------- */
+const I = {
+  back:`<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="28" height="28" fill="none"><path d="M19 12H5M11 6L5 12L11 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  mic:`<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="24" height="24" fill="none"><rect x="9" y="3" width="6" height="12" rx="3" stroke="currentColor" stroke-width="2.2"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+  clock:`<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.4"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>`,
+  warn:`<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="24" height="24" fill="none"><path d="M12 3 2 20h20L12 3Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 10v4M12 17h.01" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>`
+};
+
+/* ---------- pieces ---------- */
+function topBar(showBack=true){
+  return `<div class="top">
+    ${showBack ? `<button class="iconbtn back" type="button" aria-label="${t("back")}" onclick="back()">${I.back}</button>` : `<span class="brand" lang="en" dir="ltr">${t("brand")}</span>`}
+    <button class="lang" type="button" lang="${S.lang==="en"?"ar":"en"}" aria-label="${t("langLabel")}" onclick="toggleLang()">${t("langBtn")}</button>
+  </div>`;
+}
+function voicePanel(){
+  const v=S.voice;
+  const sw=`<button type="button" class="switch" role="switch" aria-checked="${S.voiceOn}" onclick="S.voiceOn=!S.voiceOn;S.voice.state='idle';render()"><span class="track"><span class="knob"></span></span><span>${t("voiceSwitch")}</span></button>`;
+  if(!S.voiceOn) return `<section class="voice" aria-label="${t("voiceTitle")}"><div class="row"><strong>${t("voiceTitle")}</strong>${sw}</div><p class="note">${t("voiceOff")}</p></section>`;
+  let body="";
+  if(v.state==="confirm"){
+    const r=v.result, miss=`<span class="error-text">${t("missing")}</span>`;
+    body=`<div class="dialog" role="dialog" aria-labelledby="dq">
+      <p class="note">${t("heard")} <bdi dir="auto">${v.heard.replace(/([A-Za-z]+)\s+(\d+)/g,"$1\u00a0$2")}</bdi></p>
+      <p class="q" id="dq">${t("didYouMean")}</p>
+      <p class="summary" style="margin:0">${t("course")}: ${r.course?code(r.course):miss}</p>
+      <p class="summary" style="margin:0">${t("mine")}: ${r.mine?code(r.mine):miss}</p>
+      <p class="summary" style="margin:0">${t("want")}: ${r.want?code(r.want):miss}</p>
+      <div class="btnrow">
+        <button class="btn primary" type="button" onclick="voiceYes()">${t("yes")}</button>
+        <button class="btn secondary" type="button" onclick="voiceNo()">${t("no")}</button>
+        <button class="btn secondary" type="button" onclick="voiceEdit()">${t("edit")}</button>
+      </div></div>`;
+  } else if(v.state==="notunderstood"){
+    body=`<div class="dialog" role="alert">
+      <p class="alert">${I.warn}<span>${t("notUnderstood")}</span></p>
+      ${v.heard?`<p class="note">${t("heard")} <bdi dir="auto">${v.heard.replace(/([A-Za-z]+)\s+(\d+)/g,"$1\u00a0$2")}</bdi></p>`:""}
+      <div class="btnrow">
+        <button class="btn primary" type="button" onclick="startVoice()">${t("tryAgain")}</button>
+        <button class="btn secondary" type="button" onclick="S.voice.state='idle';go('S2')">${t("useForm")}</button>
+      </div></div>`;
+  } else if(v.state==="unsupported"){
+    body=`<p class="note" role="status">${t("noVoice")}</p>`;
+  }
+  const listening=v.state==="listening";
+  return `<section class="voice" aria-label="${t("voiceTitle")}">
+    <div class="row"><strong>${t("voiceTitle")}</strong>${sw}</div>
+    <button type="button" class="mic ${listening?"listening":""}" onclick="startVoice()" ${listening?'aria-pressed="true"':""}>
+      <span class="ring">${I.mic}</span><span>${listening?t("micListening"):t("micBtn")}</span></button>
+    <p class="note">${t("micExample")}</p>
+    <form class="typeit" onsubmit="event.preventDefault();const v=this.q.value.trim();if(v)handleHeard(v);">
+      <label class="sr" for="q">${t("typeLabel")}</label>
+      <input type="text" id="q" name="q" placeholder="${t("typeLabel")}" autocomplete="off">
+      <button type="submit">${t("typeBtn")}</button>
+    </form>
+    ${body}
+  </section>`;
+}
+function matchCard(m, f){
+  const status = m.free
+    ? `<div class="status free"><span class="dot" aria-hidden="true"></span>${t("free")}</div>`
+    : `<div class="status busy">${I.clock}${t("busy")(num(m.busyUntil))}</div>`;
+  return `<div class="card">
+    <h2 class="who">${t("student")(m.id)} · ${t("wants")(code(f.want),code(f.mine))}</h2>
+    ${status}
+    <div class="meta">${m.fastReply?t("fast"):t("slow")}</div>
+    ${m.similar?`<span class="tag">${t("similar")}</span>`:""}
+    <button class="btn primary" type="button" ${S.lang==="ar"?`aria-label="طلب التبديل من ${t("student")(m.id)}"`:""} onclick="go('S4${m.id}')">${t("ask")(m.id)}</button>
+  </div>`;
+}
+function pathLine(){ const f=S.form; return `<p class="summary">${S.lang==="ar"?`${code(f.course)} · من ${code(f.mine)} إلى ${code(f.want)}`:`${code(f.course)} · ${code(f.mine)} → ${code(f.want)}`}</p>`; }
+
+/* ---------- screens ---------- */
+const SCREENS = {
+ S1(){ return `${topBar(false)}
+   <h1 tabindex="-1">${t("s1Title")}</h1><p class="sub">${t("s1Sub")}</p>
+   <button class="btn primary" type="button" onclick="go('S2')">${t("swap")}</button>
+   <button class="btn secondary" type="button" onclick="go('SOON')">${t("need")}</button>
+   <button class="btn secondary" type="button" onclick="go('SOON')">${t("lost")}</button>
+   ${voicePanel()}
+   ${S.flash?`<p class="note" role="status">${S.flash}</p>`:""}`; },
+ SOON(){ return `${topBar()}<h1 tabindex="-1">${t("soonTitle")}</h1><p class="sub">${t("soonSub")}</p>
+   <button class="btn primary" type="button" onclick="home()">${t("home")}</button>`; },
+ S2(){ const f=S.form, opt=(list,v)=>list.map(x=>`<option value="${x}" ${x===v?"selected":""}>${x}</option>`).join("");
+   return `${topBar()}<h1 tabindex="-1">${t("s2Title")}</h1>
+   ${S.remembered?`<p class="note">${t("remembered")}</p>`:""}
+   <div class="field"><label for="c">${t("course")}</label><select id="c" dir="${S.lang==="ar"?"rtl":"ltr"}" onchange="S.form.course=this.value">${opt(["AI 418","CS 201","MATH 101"],f.course)}</select></div>
+   <div class="field"><label for="m">${t("mine")}</label><select id="m" dir="${S.lang==="ar"?"rtl":"ltr"}" onchange="S.form.mine=this.value">${opt(["L01","L02","L03"],f.mine)}</select></div>
+   <div class="field"><label for="w">${t("want")}</label><select id="w" dir="${S.lang==="ar"?"rtl":"ltr"}" onchange="S.form.want=this.value" ${S.sameErr?'aria-invalid="true" aria-describedby="werr"':""}>${opt(["L01","L02","L03"],f.want)}</select>
+     ${S.sameErr?`<p class="error-text" id="werr" role="alert">${I.warn}${t("sameErr")}</p>`:""}</div>
+   <p class="note">${t("s2Note")}</p>
+   <button class="btn primary" type="button" onclick="if(S.form.mine===S.form.want){S.sameErr=true;render();}else{save('form',S.form);S.remembered=true;go(hasMatches()?'S3':'S3-0');}">${t("find")}</button>
+   ${voicePanel()}`; },
+ S3(){ const list=ordered(MATCHES);
+   return `${topBar()}<h1 tabindex="-1">${t("s3Title")(2)}</h1>
+   <div class="row">
+     <button type="button" class="switch" role="switch" aria-checked="${S.smart}" onclick="S.smart=!S.smart;render();announce(S.smart?t('orderOn'):t('orderOff'))"><span class="track"><span class="knob"></span></span><span>${t("smart")}</span></button>
+     <button type="button" class="btn link" style="width:auto" aria-expanded="${S.why}" onclick="S.why=!S.why;render()">${t("why")}</button>
+   </div>
+   ${S.why?`<p class="why">${S.smart?t("whyOn"):t("whyOff")}</p>`:""}
+   ${list.map(m=>matchCard(m,S.form)).join("")}
+   <p class="note">${S.smart?t("orderOn"):t("orderOff")}</p>
+   ${pathLine()}`; },
+ S4A(){ return askScreen("A"); }, S4B(){ return askScreen("B"); },
+ "S4A-W"(){ return waitScreen("A"); }, "S4B-W"(){ return waitScreen("B"); },
+ E1(){ const f=S.form, b=MATCHES[1];
+   return `${topBar()}
+   <p class="alert" role="alert">${I.warn}<span>${t("e1Tag")}</span></p>
+   <h1 tabindex="-1">${t("e1Title")}</h1><p class="sub">${t("e1Sub")}</p>
+   ${matchCard({...b,similar:false},f)}
+   <button class="btn secondary" type="button" onclick="go('S3-B')">${t("other")}</button>
+   <p class="note">${t("saved")}</p>`; },
+ "S3-B"(){ return `${topBar()}<h1 tabindex="-1">${t("s3Title")(1)}</h1>
+   ${matchCard({...MATCHES[1],similar:false},S.form)}${pathLine()}`; },
+ S5(){ const f=S.form; return `${topBar(false)}
+   <h1 tabindex="-1"><span class="ok" aria-hidden="true">✓ </span>${t("s5Title")}</h1>
+   <p class="sub">${t("accepted")(num("12:05"))}</p>
+   <div class="card"><p class="big" style="margin:0">${code(f.course)}</p>
+     <p style="margin:0">${t("you")(code(f.mine),code(f.want))}</p>
+     <p style="margin:0">${t("with")(code(f.want),code(f.mine))}</p></div>
+   <p class="note" style="color:var(--text);font-weight:600">${t("nextStep")}</p>
+   <button class="btn primary" type="button" onclick="go('S5M')">${t("msgNoura")}</button>
+   <button class="btn secondary" type="button" onclick="home()">${t("home")}</button>`; },
+ S5M(){ if(!S.chat) S.chat=t("chatMsg"); return `${topBar()}
+   <h1 tabindex="-1">${t("chatTitle")}</h1>
+   <div class="field"><label for="chat">${t("chatLabel")}</label><textarea id="chat" oninput="S.chat=this.value">${S.chat}</textarea></div>
+   ${S.sent?`<p class="status free" role="status"><span class="dot" aria-hidden="true"></span>${t("msgSent")}</p>
+     <button class="btn primary" type="button" onclick="S.sent=false;S.chat='';home()">${t("done")}</button>`
+   :`<button class="btn primary" type="button" onclick="S.sent=true;render();announce(t('msgSent'))">${t("sendMsg")}</button>`}`; },
+ "S3-0"(){ return `${topBar()}
+   <h1 tabindex="-1">${t("noneTitle")}</h1><p class="sub">${t("noneSub")}</p>
+   ${pathLine()}
+   <p class="note">${t("noneNotify")}</p>
+   <button class="btn primary" type="button" onclick="go('REG')">${t("contactReg")}</button>
+   <button class="btn secondary" type="button" onclick="back()">${t("change")}</button>`; },
+ REG(){ const f=S.form; if(!S.reg) S.reg=t("regMsg")(f.course,f.mine,f.want); return `${topBar()}
+   <h1 tabindex="-1">${t("regTitle")}</h1><p class="sub">${t("regSub")}</p>
+   <div class="field"><label for="reg">${t("regLabel")}</label><textarea id="reg" oninput="S.reg=this.value">${S.reg}</textarea></div>
+   ${S.regSent?`<p class="status free" role="status"><span class="dot" aria-hidden="true"></span>${t("regSent")}</p>
+     <button class="btn primary" type="button" onclick="S.regSent=false;S.reg='';home()">${t("done")}</button>`
+   :`<button class="btn primary" type="button" onclick="S.regSent=true;render();announce(t('regSent'))">${t("send")}</button>`}`; }
+};
+function askScreen(x){ const f=S.form; if(!S.msg) S.msg=t("msg")(f.course,f.mine,f.want);
+  return `${topBar()}<h1 tabindex="-1">${t("s4Title")(x)}</h1>
+   <div class="field"><label for="msg">${t("msgLabel")}</label><textarea id="msg" oninput="S.msg=this.value">${S.msg}</textarea></div>
+   <button class="btn primary" type="button" onclick="go('S4${x}-W')">${t("send")}</button>
+   <p class="note">${t("s4Note")}</p>`; }
+function waitScreen(x){ return `${topBar()}<h1 tabindex="-1">${t("sentTitle")}</h1><p class="sub">${t("waiting")(x)}</p>
+   <div class="card">${pathLine()}<div class="status" style="color:var(--muted)"><span class="spinner" aria-hidden="true"></span>${t("pending")}</div></div>
+   <button class="btn secondary" type="button" onclick="clearTimeout(S.timer);S.stack.pop();S.screen='S3';S.flash='';render(true);announce(t('canceled'))">${t("cancel")}</button>
+   <p class="note">${t("sentNote")}</p>`; }
+
+/* ---------- render ---------- */
+function render(focus=false){
+  const root=document.documentElement; root.lang=S.lang; root.dir=S.lang==="ar"?"rtl":"ltr";
+  document.title = "AroundU · " + (S.lang==="ar"?"تبديل شعبة":"Swap a section");
+  const app=document.getElementById("app"); app.setAttribute("data-screen",S.screen);
+  const active=document.activeElement && document.activeElement.id;
+  app.innerHTML = SCREENS[S.screen]();
+  if(focus){ const h=app.querySelector("h1"); if(h) h.focus(); window.scrollTo(0,0); }
+  else if(active){ const el=document.getElementById(active); if(el) el.focus(); }
+}
+render(true);
+</script>
+</body>
+</html>
